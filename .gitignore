@@ -3,3 +3,5 @@
 ################################################################################
 
 /.vs/NetworkMonitor/v16
+/NetworkTopology/bin/Debug
+/NetworkTopology/obj/Debug
