@@ -17,7 +17,9 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
-            <FontFamily x:Key="font">../Resource/#思源黑体 CN</FontFamily>
+            <FontFamily x:Key="font">../Resources/Fonts/#思源黑体 CN</FontFamily>
+
+            <vm:ViewModelLocator x:Key="Locator" d:IsDataSource="True" xmlns:vm="clr-namespace:NetworkTopology.ViewModel" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

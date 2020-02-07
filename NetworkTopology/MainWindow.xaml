@@ -3,20 +3,65 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:NetworkTopology.ViewModel"
         xmlns:local="clr-namespace:NetworkTopology"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
         mc:Ignorable="d"
-        Title="网络拓扑图" Height="450" Width="800" FontFamily="{StaticResource font}">
+        Title="网络拓扑图" WindowState="Maximized" FontFamily="{StaticResource font}"
+        DataContext="{Binding Source={StaticResource Locator},Path=Main}">
     <Window.Resources>
-        
+        <ControlTemplate x:Key="DeviceThumbTemplate" TargetType="{x:Type Thumb}">
+            <Border BorderBrush="{x:Null}" BorderThickness="0" Background="{x:Null}">
+                <Grid>
+                    <Grid.RowDefinitions >
+                        <RowDefinition Height="20"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="{TemplateBinding Tag}" Foreground="White" FontFamily="{StaticResource font}" HorizontalAlignment="Center"/>
+                    <Border Width="50" Height="50" Grid.Row="1" Background="{TemplateBinding Background}" Margin="0"/>
+                </Grid>
+            </Border>
+        </ControlTemplate>
+        <DataTemplate DataType="{x:Type vm:DeviceVM}">
+            <Thumb Template="{StaticResource DeviceThumbTemplate}" Tag="{Binding DeviceName}">
+                <Thumb.Background>
+                    <ImageBrush ImageSource="{Binding DeviceItem.Source}"/>
+                </Thumb.Background>
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="DragDelta">
+                        <i:InvokeCommandAction Command="{Binding DragDeltaCmd}" CommandParameter="{Binding ElementName=canvas}"/>
+                    </i:EventTrigger>
+                    <i:EventTrigger EventName="DragStarted">
+                        <i:InvokeCommandAction Command="{Binding DragStartedCmd}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=Thumb}}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Thumb>
+        </DataTemplate>
     </Window.Resources>
-    <Canvas>
-        <Canvas.ContextMenu>
+    <ItemsControl ItemsSource="{Binding DeviceItems}">
+        <ItemsControl.ContextMenu>
             <ContextMenu>
-                <MenuItem Header="添加设备" Command=""/>
-                <MenuItem Header="添加连线" Command=""/>
+                <MenuItem Header="添加设备" Command="{Binding AddDeviceCmd}"/>
+                <MenuItem Header="添加连线" Command="{Binding AddLineCmd}"/>
             </ContextMenu>
-        </Canvas.ContextMenu>
-        <TextBlock Text="旗黑修长版" Width="500" Height="100" FontFamily="{StaticResource font}" FontSize="50"/>
-        <Thumb  Name="thumb1" Background="Red" Height="50" Width="100" DragDelta="DragDelta" DragStarted="DragStarted" DragCompleted="DragCompleted" Canvas.Left="289" Canvas.Top="107"/>
-    </Canvas>
+        </ItemsControl.ContextMenu>
+        <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+                <Canvas Background="Black" x:Name="canvas">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseRightButtonDown">
+                            <i:InvokeCommandAction Command="{Binding MarkMousePositionCmd}" CommandParameter="{Binding ElementName=canvas}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Canvas>
+            </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemContainerStyle>
+            <Style>
+                <Setter Property="Canvas.Left" Value="{Binding Left}"/>
+                <Setter Property="Canvas.Top" Value="{Binding Top}"/>
+            </Style>
+        </ItemsControl.ItemContainerStyle>
+    </ItemsControl>
 </Window>
